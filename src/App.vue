@@ -17,47 +17,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-function createObservableAPI(api) {
-  const state = Vue.observable({
-    data: null,
-    loading: false,
-    error: null,
-  });
-
-  return new Proxy(api, {
-    apply(target, thisArg, argumentsList) {
-      state.loading = true;
-      target(argumentsList).call(thisArg).then((response) => {
-        state.data = response;
-        state.error = null;
-      }).catch((error) => {
-        state.error = error;
-      })
-        .finally(() => {
-          state.loading = false;
-        });
-      return state;
-    },
-  });
-}
-
-let callCount = 0;
-function callApi(name) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (callCount % 2) {
-        resolve({
-          name,
-        });
-      } else {
-        reject(new Error(callCount));
-      }
-      callCount += 1;
-    }, 1000);
-  });
-}
+import { createObservableAPI } from './helpers/observable.api';
+import { callApi } from './helpers/api.mock';
 
 export default {
   name: 'app',
@@ -74,6 +35,7 @@ export default {
 
   watch: {
     name(name) {
+      console.log(name);
       this.callApi(name);
     },
   },
