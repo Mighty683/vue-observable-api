@@ -2,7 +2,11 @@
   <div id="app">
     <div>
       <label>NAME</label>
-      <input v-model="name" />
+      <input
+        v-if="apiState.data"
+        :value="apiState.data.name"
+        @input="onInput($event.target.value)"
+      />
     </div>
     <div>
       <span v-if="apiState && apiState.loading">Loading</span>
@@ -18,7 +22,7 @@
 
 <script>
 import { createObservableAPI } from './helpers/observable.api';
-import { callApi } from './helpers/api.mock';
+import { getApi, changeApi } from './helpers/api.mock';
 
 export default {
   name: 'app',
@@ -30,17 +34,19 @@ export default {
     };
   },
   methods: {
-    callApi: createObservableAPI(callApi),
-  },
+    ...createObservableAPI(
+      getApi,
+      changeApi,
+    ),
 
-  watch: {
-    name(name) {
-      console.log(name);
-      this.callApi(name);
+    onInput(name) {
+      if (!this.apiState.loading) {
+        this.changeApi(name);
+      }
     },
   },
   created() {
-    this.apiState = this.callApi(this.name);
+    this.apiState = this.getApi(this.name);
   },
 };
 

@@ -1,16 +1,29 @@
-let callCount = 0;
+let changeCallCount = 0;
+let nameState = 'Tomek';
 
-export function callApi(name) {
+export function changeApi(name) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (callCount % 2) {
+      if (changeCallCount % 10) {
+        nameState = name;
         resolve({
-          name,
+          name: nameState,
         });
       } else {
-        reject(new Error(callCount));
+        reject(new Error('Change failed'));
       }
-      callCount += 1;
+      changeCallCount += 1;
+    }, 1000);
+  });
+}
+
+
+export function getApi() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        name: nameState,
+      });
     }, 1000);
   });
 }
